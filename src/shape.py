@@ -7,7 +7,7 @@ class Point:
         self.y = y
     
     def __str__(self) -> str:
-        return f'x: {self.x}, y: {self.y}' # print(...) also returns 'None'
+        return f'x: {self.x}, y: {self.y}' # print(...) also returns 'None' so it should be returned as a string
     
     def __add__(self, p2) -> float:
         return Point(self.x + p2.x, self.y + p2.y)
@@ -30,11 +30,13 @@ class Shape:
         return f'number of vertices: {len(self.vertices)}'
     
     def perimeter(self) -> float:
+        # if the shape has no vertices, the perimeter may not be calculated
         if len(self.vertices) == 0:
             raise RuntimeError("Shape does not have vertices")
             
         p = 0
         for i in range(len(self.vertices)):
+            # if it's a line:
             if len(self.vertices) == 2:
                 p += math.sqrt((self.vertices[1].x - self.vertices[0].x)**2 + (self.vertices[1].y - self.vertices[0].y)**2)
                 return p
@@ -68,9 +70,13 @@ class Triangle(Shape):
         self.vertices.append(p1)
         self.vertices.append(p2)
         self.vertices.append(p3)
+        # Either check if they're all on the same line (bad approach)
         if ((p1.x == p2.x) and (p2.x == p3.x)) or ((p1.y == p2.y) and (p2.y == p3.y)):
             raise RuntimeError("Shape is not a triangle")
-    
+        # Or check if the area is zero (better approach)
+        if self.area() == 0:
+            raise RuntimeError("Shape is not a triangle")
+
     def __str__(self) -> str:
         s = f''' Triangle:
  	p1: ({self.vertices[0]})
@@ -80,6 +86,7 @@ class Triangle(Shape):
     
     def area(self) -> float:
         p = self.perimeter()/2
+        # Calculate the length of each side
         len_a = math.sqrt((self.vertices[0].x - self.vertices[1].x)**2 + (self.vertices[0].y - self.vertices[1].y)**2)
         len_b = math.sqrt((self.vertices[1].x - self.vertices[2].x)**2 + (self.vertices[1].y - self.vertices[2].y)**2)
         len_c = math.sqrt((self.vertices[2].x - self.vertices[0].x)**2 + (self.vertices[2].y - self.vertices[0].y)**2)
